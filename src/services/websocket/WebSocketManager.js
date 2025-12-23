@@ -24,6 +24,7 @@ class WebSocketManager {
             },
             pingTimeout: 60000,
             pingInterval: 25000,
+            path: options.path,
             ...options
         });
 

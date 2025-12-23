@@ -249,6 +249,16 @@
             document.getElementById('wsUrl').value = `${protocol}//${host}`;
         });
 
+        // Detect base path from current URL
+        const getBasePath = () => {
+            const path = window.location.pathname;
+            if (path.includes('/ws-test')) {
+                return path.substring(0, path.indexOf('/ws-test'));
+            }
+            return '';
+        };
+        const BASE_PATH = getBasePath();
+
         let socket = null;
         const subscribedSessions = new Set();
         
@@ -265,7 +275,8 @@
             
             try {
                 socket = io(url, {
-                    transports: ['websocket', 'polling']
+                    transports: ['websocket', 'polling'],
+                    path: BASE_PATH ? BASE_PATH.replace(/\/$/, '') : undefined
                 });
                 
                 socket.on('connect', () => {

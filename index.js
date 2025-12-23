@@ -10,6 +10,8 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
+const BASE_PATH = process.env.BASE_PATH ? `/${process.env.BASE_PATH.replace(/^\/|\/$/g, '')}` : '';
+
 // Import Routes
 const whatsappRoutes = require('./src/routes/whatsapp');
 
@@ -23,15 +25,14 @@ const wsManager = require('./src/services/websocket/WebSocketManager');
 wsManager.initialize(server, {
     cors: {
         origin: process.env.CORS_ORIGIN || '*'
-    }
+    },
+    path: BASE_PATH ? BASE_PATH.replace(/\/$/, '') : undefined
 });
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-const BASE_PATH = process.env.BASE_PATH ? `/${process.env.BASE_PATH.replace(/^\/|\/$/g, '')}` : '';
 
 // Serve static files from public folder (for media access)
 app.use(`${BASE_PATH}/media`, express.static(path.join(__dirname, 'public', 'media')));
@@ -126,7 +127,8 @@ app.use((err, req, res, next) => {
 // Start Server
 server.listen(PORT, () => {
     const baseUrl = BASE_PATH ? `http://localhost:${PORT}${BASE_PATH}` : `http://localhost:${PORT}`;
+    const wsUrl = BASE_PATH ? `ws://localhost:${PORT}${BASE_PATH.replace(/\/$/, '')}` : `ws://localhost:${PORT}`;
     console.log(`Chatery WhatsApp API running on ${baseUrl}`);
-    console.log(`WebSocket server running on ws://localhost:${PORT}`);
+    console.log(`WebSocket server running on ${wsUrl}`);
     console.log(`API Documentation: ${baseUrl}`);
 });

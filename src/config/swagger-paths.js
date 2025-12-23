@@ -1196,6 +1196,12 @@
  *       
  *       ### Connection
  *       ```javascript
+ *       // With BASE_PATH configured (e.g., /whatsapp/app)
+ *       const socket = io('https://your-server', {
+ *         path: '/whatsapp/app'
+ *       });
+ *       
+ *       // Without BASE_PATH (default)
  *       const socket = io('ws://your-server:3000');
  *       ```
  *       
