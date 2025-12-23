@@ -203,7 +203,7 @@
                     
                     <div class="form-group">
                         <label>WebSocket URL</label>
-                        <input type="text" id="wsUrl" value="http://localhost:3000">
+                        <input type="text" id="wsUrl" value="">
                     </div>
                     
                     <button class="btn-connect" id="btnConnect" onclick="toggleConnection()">Connect</button>
@@ -242,6 +242,13 @@
     </div>
 
     <script>
+        // Auto-populate WebSocket URL from current location
+        window.addEventListener('DOMContentLoaded', () => {
+            const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+            const host = window.location.host;
+            document.getElementById('wsUrl').value = `${protocol}//${host}`;
+        });
+
         let socket = null;
         const subscribedSessions = new Set();
         

@@ -31,16 +31,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const BASE_PATH = process.env.BASE_PATH ? `/${process.env.BASE_PATH.replace(/^\/|\/$/g, '')}` : '';
+
 // Serve static files from public folder (for media access)
-app.use('/media', express.static(path.join(__dirname, 'public', 'media')));
+app.use(`${BASE_PATH}/media`, express.static(path.join(__dirname, 'public', 'media')));
 
 // Serve Dashboard
-app.get('/dashboard', (req, res) => {
+app.get(`${BASE_PATH}/dashboard`, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 // Serve WebSocket test page
-app.get('/ws-test', (req, res) => {
+app.get(`${BASE_PATH}/ws-test`, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'websocket-test.html'));
 });
 
@@ -56,16 +58,16 @@ const swaggerUiOptions = {
 };
 
 // API Documentation (Swagger UI) at root
-app.use('/', swaggerUi.serve);
-app.get('/', swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+app.use(BASE_PATH, swaggerUi.serve);
+app.get(`${BASE_PATH}/`, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 // Swagger JSON endpoint
-app.get('/api-docs.json', (req, res) => {
+app.get(`${BASE_PATH}/api-docs.json`, (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
 });
 
-app.get('/api/health', (req, res) => {
+app.get(`${BASE_PATH}/api/health`, (req, res) => {
     res.json({
         success: true,
         message: 'Server is running',
@@ -74,7 +76,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Dashboard Login
-app.post('/api/dashboard/login', (req, res) => {
+app.post(`${BASE_PATH}/api/dashboard/login`, (req, res) => {
     const { username, password } = req.body;
     
     const validUsername = process.env.DASHBOARD_USERNAME || 'admin';
@@ -94,7 +96,7 @@ app.post('/api/dashboard/login', (req, res) => {
 });
 
 // WebSocket Stats
-app.get('/api/websocket/stats', (req, res) => {
+app.get(`${BASE_PATH}/api/websocket/stats`, (req, res) => {
     res.json({
         success: true,
         data: wsManager.getStats()
@@ -102,7 +104,7 @@ app.get('/api/websocket/stats', (req, res) => {
 });
 
 // WhatsApp Routes (with API Key Authentication)
-app.use('/api/whatsapp', apiKeyAuth, whatsappRoutes);
+app.use(`${BASE_PATH}/api/whatsapp`, apiKeyAuth, whatsappRoutes);
 
 // 404 Handler
 app.use((req, res) => {
@@ -123,7 +125,8 @@ app.use((err, req, res, next) => {
 
 // Start Server
 server.listen(PORT, () => {
-    console.log(`Chatery WhatsApp API running on http://localhost:${PORT}`);
+    const baseUrl = BASE_PATH ? `http://localhost:${PORT}${BASE_PATH}` : `http://localhost:${PORT}`;
+    console.log(`Chatery WhatsApp API running on ${baseUrl}`);
     console.log(`WebSocket server running on ws://localhost:${PORT}`);
-    console.log(`API Documentation: http://localhost:${PORT}`);
+    console.log(`API Documentation: ${baseUrl}`);
 });

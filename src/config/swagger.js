@@ -1,5 +1,7 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 
+const BASE_PATH = process.env.BASE_PATH ? `/${process.env.BASE_PATH.replace(/^\/|\/$/g, '')}` : '';
+
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -48,11 +50,11 @@ All API endpoints require \`X-Api-Key\` header (if API_KEY is configured in .env
         },
         servers: [
             {
-                url: '/',
+                url: process.env.BASE_URL ? `${process.env.BASE_URL}${BASE_PATH}` : BASE_PATH || '/',
                 description: 'Current Server'
             },
             {
-                url: 'http://localhost:3000',
+                url: `http://localhost:${process.env.PORT || 3000}${BASE_PATH}`,
                 description: 'Local Development'
             }
         ],
