@@ -25,8 +25,8 @@ const wsManager = require('./src/services/websocket/WebSocketManager');
 wsManager.initialize(server, {
     cors: {
         origin: process.env.CORS_ORIGIN || '*'
-    },
-    path: BASE_PATH ? BASE_PATH.replace(/\/$/, '') : undefined
+    }
+    // Note: Using default Socket.IO path '/socket.io/' - Nginx handles path mapping
 });
 
 // Middleware
@@ -127,7 +127,7 @@ app.use((err, req, res, next) => {
 // Start Server
 server.listen(PORT, () => {
     const baseUrl = BASE_PATH ? `http://localhost:${PORT}${BASE_PATH}` : `http://localhost:${PORT}`;
-    const wsUrl = BASE_PATH ? `ws://localhost:${PORT}${BASE_PATH.replace(/\/$/, '')}` : `ws://localhost:${PORT}`;
+    const wsUrl = BASE_PATH ? `ws://localhost:${PORT}${BASE_PATH.replace(/\/$/, '')}/socket.io` : `ws://localhost:${PORT}/socket.io`;
     console.log(`Chatery WhatsApp API running on ${baseUrl}`);
     console.log(`WebSocket server running on ${wsUrl}`);
     console.log(`API Documentation: ${baseUrl}`);

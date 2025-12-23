@@ -1209,7 +1209,7 @@
         function connectWebSocket() {
             socket = io(window.location.origin, {
                 transports: ['websocket', 'polling'],
-                path: BASE_PATH ? BASE_PATH.replace(/\/$/, '') : undefined
+                path: BASE_PATH ? BASE_PATH.replace(/\/$/, '') + '/socket.io' : '/socket.io'
             });
 
             socket.on('connect', () => {
