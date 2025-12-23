@@ -1,4 +1,3 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, downloadMediaMessage, getContentType } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const path = require('path');
 const fs = require('fs');
@@ -154,6 +153,10 @@ class WhatsAppSession {
     // ==================== CONNECTION ====================
 
     async connect() {
+        const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, downloadMediaMessage, getContentType } = await import('@whiskeysockets/baileys');
+
+        this.DisconnectReason = DisconnectReason;
+
         try {
             // Pastikan folder auth ada
             if (!fs.existsSync(this.authFolder)) {
@@ -224,7 +227,7 @@ class WhatsAppSession {
             }
 
             if (connection === 'close') {
-                const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+                const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== this.DisconnectReason.loggedOut;
                 
                 console.log(`❌ [${this.sessionId}] Connection closed:`, lastDisconnect?.error?.message);
                 this.connectionStatus = 'disconnected';
@@ -1189,6 +1192,8 @@ class WhatsAppSession {
      * Auto-save media when message received
      */
     async _autoSaveMedia(message) {
+        const { downloadMediaMessage, getContentType } = await import('@whiskeysockets/baileys');
+
         try {
             if (!message.message) return null;
 
