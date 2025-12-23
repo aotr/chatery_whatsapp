@@ -1082,8 +1082,13 @@
         // Detect base path from current URL
         const getBasePath = () => {
             const path = window.location.pathname;
-            if (path.includes('/dashboard')) {
-                return path.substring(0, path.indexOf('/dashboard'));
+            // Check if we're in a subpath (like /whatsapp/app/)
+            if (path.startsWith('/whatsapp/')) {
+                // Extract the base path up to the app level
+                const parts = path.split('/').filter(p => p);
+                if (parts.length >= 2 && parts[0] === 'whatsapp') {
+                    return '/' + parts.slice(0, 2).join('/');
+                }
             }
             return '';
         };
